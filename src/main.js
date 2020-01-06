@@ -61,7 +61,9 @@ class TemplateEntityRow extends LitElement {
               ${this.state.secondary}
             </div>
           </div>
+          <div class="state">
           ${this.state.state}
+          </div>
         </div>
       </div>
     `;
@@ -72,7 +74,12 @@ class TemplateEntityRow extends LitElement {
     let style = HuiGenericEntityRow.styles;
     style.cssText = style.cssText
       .replace(":host", "#wrapper")
-      .replace("state-badge", "ha-icon");
+      .replace("state-badge", "ha-icon")
+      + `
+      .state {
+        text-align: right;
+      }
+      `;
     return style;
   }
 }
