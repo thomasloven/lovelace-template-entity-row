@@ -79,6 +79,9 @@ class TemplateEntityRow extends LitElement {
       .state {
         text-align: right;
       }
+      #wrapper {
+        min-height: 40px;
+      }
       `;
     return style;
   }
