@@ -6,23 +6,15 @@ class TemplateEntityRow extends LitElement {
   static get properties() {
     return {
       hass: {},
-      _config: {},
       state: {},
     };
   }
 
   setConfig(config) {
     this._config = config;
-    this.state = {
-      icon: "",
-      active: "",
-      name: "",
-      secondary: "",
-      state: "",
-      ...config,
-    };
+    this.state = config;
 
-    for(const k of ["icon", "active", "name", "secondary", "state", "condition"]) {
+    for(const k of ["icon", "active", "name", "secondary", "state", "condition", "image", "entity"]) {
       if(config[k]
         && (String(config[k]).includes("{%") || String(config[k]).includes("{{"))
         ) {
@@ -31,6 +23,7 @@ class TemplateEntityRow extends LitElement {
           this.requestUpdate();
         }, {
           template: config[k],
+          variables: {config},
           entity_ids: config.entity_ids,
         });
       }
@@ -38,31 +31,58 @@ class TemplateEntityRow extends LitElement {
   }
 
   render() {
-    if (this._config.condition && String(this.state.condition).toLowerCase() !== "true")
+    if (this.state.condition && String(this.state.condition).toLowerCase() !== "true")
       return html``;
-    const active = String(this.state.active).toLowerCase();
+
+    const entity = this.hass.states[this.state.entity];
+    const icon = this.state.icon !== undefined
+      ? this.state.icon || "no:icon"
+      : entity ? entity.attributes.icon : ""
+    ;
+    const entity_picture = this.state.image !== undefined
+      ? this.state.image
+      : entity ? entity.attributes.state_picture : ""
+    ;
+    const name = this.state.name !== undefined
+      ? this.state.name
+      : entity ? entity.attributes.friendly_name || entity.entity_id : ""
+    ;
+    const secondary = this.state.secondary;
+    const state = this.state.state !== undefined
+      ? this.state.state
+      : entity ? entity.state : ""
+    ;
+    const active = String(this.state.active).toLowerCase() === "true";
+
     return html`
       <div id="wrapper">
-        <ha-icon
-          .icon=${this.state.icon}
-          style="
-            color: ${active === "true"
-              ? "var(--paper-item-icon-active-color)"
-              : "var(--paper-item-icon-color)"
-              };
-            "
-        ></ha-icon>
+        <state-badge
+          .hass=${this.hass}
+          .stateObj=${
+            {
+              entity_id: entity ? entity.entity_id : "light.",
+              state: this.state.active !== undefined
+                ? active ? "on" : "off"
+                : entity ? entity.state : "off"
+              ,
+              attributes: {
+                icon,
+                entity_picture
+              }
+            }
+          }
+        ></state-badge>
         <div class="flex">
           <div
             class="info"
           >
-            ${this.state.name}
+            ${name}
             <div class="secondary">
-              ${this.state.secondary}
+              ${secondary}
             </div>
           </div>
           <div class="state">
-          ${this.state.state}
+          ${state}
           </div>
         </div>
       </div>

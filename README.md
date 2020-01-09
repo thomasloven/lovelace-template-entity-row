@@ -35,15 +35,16 @@ entities:
 ```
 
 ## Options
-- `icon`, `name`, `state`, `secondary` selects what icon, name, state and secondary_info text to display respectively
+- `icon`, `name`, `state`, `secondary`, `image` selects what icon, name, state, secondary_info text and entity_picture to display respectively.
 - `active` if this evaluates to "true", the icon gets the color `--paper-item-icon-active-color`. Otherwise `--paper-item-icon-color`
+- `entity` if this evaluates to an entity id, `icon`, `name`, `state` and `image` will be taken from that entity unless manually overridden.
 - `condition` if this is set but does not evaluate to "true", the row is not displayed.
 
 All options accept [jinja2 templates](https://www.home-assistant.io/docs/configuration/templating/).
 
 Jinja templates have access to a few special variables. Those are:
 
-- `config` - an object containing the card, entity row or glance button configuration
+- `config` - an object containing the card configuration
 - `user` - the username of the currently logged in user
 - `browser` - the deviceID of the current browser (see [browser_mod](https://github.com/thomasloven/hass-browser_mod)).
 - `hash` - the hash part of the current URL.
