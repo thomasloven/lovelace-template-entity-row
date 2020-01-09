@@ -18,4 +18,4 @@
           </div>
         </div>
       </div>
-    `}static get styles(){let t=customElements.get("hui-generic-entity-row").styles;return t.cssText=t.cssText.replace(":host","#wrapper").replace("state-badge","ha-icon")+"\n      .state {\n        text-align: right;\n      }\n      #wrapper {\n        min-height: 40px;\n      }\n      ",t}})}]);
+    `}static get styles(){let t=customElements.get("hui-generic-entity-row").styles;return t.cssText=t.cssText.replace(":host","#wrapper")+"\n      .state {\n        text-align: right;\n      }\n      #wrapper {\n        min-height: 40px;\n      }\n      ",t}})}]);

@@ -94,7 +94,6 @@ class TemplateEntityRow extends LitElement {
     let style = HuiGenericEntityRow.styles;
     style.cssText = style.cssText
       .replace(":host", "#wrapper")
-      .replace("state-badge", "ha-icon")
       + `
       .state {
         text-align: right;
