@@ -71,6 +71,10 @@ class TemplateEntityRow extends LitElement {
               }
             }
           }
+          style=${active
+            ? "--paper-item-icon-color: var(--paper-item-icon-active-color, #fdd835);"
+            : ""
+          }
         ></state-badge>
         <div class="flex">
           <div

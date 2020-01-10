@@ -3,6 +3,7 @@
         <state-badge
           .hass=${this.hass}
           .stateObj=${{entity_id:t?t.entity_id:"light.",state:void 0!==this.state.active?o?"on":"off":t?t.state:"off",attributes:{icon:e,entity_picture:i}}}
+          style=${o?"--paper-item-icon-color: var(--paper-item-icon-active-color, #fdd835);":""}
         ></state-badge>
         <div class="flex">
           <div
