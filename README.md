@@ -15,6 +15,9 @@ resources:
 ```
 
 ## Usage example
+
+**Note:** This is *not* a card. It's a row for an [entities](https://www.home-assistant.io/lovelace/entities/).
+
 ![Skärminspelning 2020-01-03 kl  23 03 16 mov](https://user-images.githubusercontent.com/1299821/71752529-b627b000-2e7f-11ea-87ad-3b8f2d2cfe99.gif)
 ```yaml
 type: entities
@@ -36,7 +39,7 @@ entities:
 
 ## Options
 - `icon`, `name`, `state`, `secondary`, `image` selects what icon, name, state, secondary_info text and entity_picture to display respectively.
-- `active` if this evaluates to "true", the icon gets the color `--paper-item-icon-active-color`. Otherwise `--paper-item-icon-color`
+- `active` if this evaluates to "true", the icon gets the color `--paper-item-icon-active-color`. Otherwise `--paper-item-icon-color`.
 - `entity` if this evaluates to an entity id, `icon`, `name`, `state` and `image` will be taken from that entity unless manually overridden.
 - `condition` if this is set but does not evaluate to "true", the row is not displayed.
 
@@ -48,6 +51,14 @@ Jinja templates have access to a few special variables. Those are:
 - `user` - the username of the currently logged in user
 - `browser` - the deviceID of the current browser (see [browser_mod](https://github.com/thomasloven/hass-browser_mod)).
 - `hash` - the hash part of the current URL.
+
+In evaluated templates the function `_(<key>)` (underscore) will localize the `<key>` to the current language.
+E.g. `_(state.binary_sensor.motion.off)` will be replaced with `Clear` if your language is set to English.
+
+To find the available keys, open your browsers console, type in the following and press Enter:
+```javascript
+document.querySelector("home-assistant").hass.resouces
+```
 
 # FAQ
 

@@ -1,5 +1,21 @@
 import {LitElement, html, css } from "card-tools/src/lit-element";
-import {subscribeRenderTemplate} from "card-tools/src/templates";
+import {subscribeRenderTemplate, hasTemplate} from "card-tools/src/templates";
+
+const OPTIONS = [
+  "icon",
+  "active",
+  "name",
+  "secondary",
+  "state",
+  "condition",
+  "image",
+  "entity",
+  // Secret option -
+  // Set color to a hs-color value ("[<hue>,<saturation>]")
+  // with hue in the range 0-360 and saturation 0-100.
+  // Works only if entity is unset and active is set.
+  "color",
+]
 
 class TemplateEntityRow extends LitElement {
 
@@ -14,10 +30,8 @@ class TemplateEntityRow extends LitElement {
     this._config = config;
     this.state = config;
 
-    for(const k of ["icon", "active", "name", "secondary", "state", "condition", "image", "entity"]) {
-      if(config[k]
-        && (String(config[k]).includes("{%") || String(config[k]).includes("{{"))
-        ) {
+    for(const k of OPTIONS) {
+      if(config[k] && hasTemplate(config[k])) {
         subscribeRenderTemplate(null, (res) => {
           this.state[k] = res;
           this.requestUpdate();
@@ -31,50 +45,54 @@ class TemplateEntityRow extends LitElement {
   }
 
   render() {
-    if (this.state.condition && String(this.state.condition).toLowerCase() !== "true")
+    if (this.state.condition !== undefined && String(this.state.condition).toLowerCase() !== "true")
       return html``;
 
-    const entity = this.hass.states[this.state.entity];
+    const base = this.hass.states[this.state.entity];
+    const entity = base && JSON.parse(JSON.stringify(base)) || {
+      entity_id: "light.",
+      attributes: {icon: "no:icon"},
+    };
+
     const icon = this.state.icon !== undefined
       ? this.state.icon || "no:icon"
-      : entity ? entity.attributes.icon : ""
+      : undefined;
     ;
-    const entity_picture = this.state.image !== undefined
-      ? this.state.image
-      : entity ? entity.attributes.state_picture : ""
-    ;
+    const image = this.state.image;
     const name = this.state.name !== undefined
       ? this.state.name
-      : entity ? entity.attributes.friendly_name || entity.entity_id : ""
+      : base ? base.attributes.friendly_name || base.entity_id : undefined
     ;
     const secondary = this.state.secondary;
     const state = this.state.state !== undefined
       ? this.state.state
-      : entity ? entity.state : ""
+      : entity ? entity.state : undefined
     ;
-    const active = String(this.state.active).toLowerCase() === "true";
+    const active = this.state.active !== undefined
+      ? String(this.state.active).toLowerCase() === "true"
+      : undefined
+    ;
+
+    if(active !== undefined) {
+      entity.attributes.brightness = 255;
+      entity.attributes.hs_color = this.state.color !== undefined
+      ? JSON.parse(this.state.color)
+      : [0,0];
+    }
 
     return html`
       <div id="wrapper">
         <state-badge
           .hass=${this.hass}
-          .stateObj=${
-            {
-              entity_id: entity ? entity.entity_id : "light.",
-              state: this.state.active !== undefined
-                ? active ? "on" : "off"
-                : entity ? entity.state : "off"
-              ,
-              attributes: {
-                icon,
-                entity_picture
-              }
-            }
+          .stateObj=${entity}
+          style=${active !== undefined
+              ? active
+                ? "--paper-item-icon-color: var(--paper-item-icon-active-color, #fdd835);"
+                : "--paper-item-icon-active-color: var(--paper-item-icon-color, #44739e);"
+              : ""
           }
-          style=${active
-            ? "--paper-item-icon-color: var(--paper-item-icon-active-color, #fdd835);"
-            : ""
-          }
+          .overrideIcon=${icon}
+          .overrideImage=${image}
         ></state-badge>
         <div class="flex">
           <div
