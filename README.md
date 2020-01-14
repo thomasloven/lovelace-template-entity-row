@@ -57,7 +57,7 @@ E.g. `_(state.binary_sensor.motion.off)` will be replaced with `Clear` if your l
 
 To find the available keys, open your browsers console, type in the following and press Enter:
 ```javascript
-document.querySelector("home-assistant").hass.resouces
+document.querySelector("home-assistant").hass.resources
 ```
 
 # FAQ
