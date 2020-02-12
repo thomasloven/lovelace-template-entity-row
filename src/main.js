@@ -27,18 +27,18 @@ class TemplateEntityRow extends LitElement {
   }
 
   setConfig(config) {
-    this._config = config;
-    this.state = config;
+    this._config = {...config};
+    this.state = {...this._config};
 
     for(const k of OPTIONS) {
-      if(config[k] && hasTemplate(config[k])) {
+      if(this._config[k] && hasTemplate(this._config[k])) {
         subscribeRenderTemplate(null, (res) => {
           this.state[k] = res;
           this.requestUpdate();
         }, {
-          template: config[k],
-          variables: {config},
-          entity_ids: config.entity_ids,
+          template: this._config[k],
+          variables: {config: this._config},
+          entity_ids: this._config.entity_ids,
         });
       }
     }
