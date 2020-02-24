@@ -1,5 +1,6 @@
 import {LitElement, html, css } from "card-tools/src/lit-element";
 import {subscribeRenderTemplate, hasTemplate} from "card-tools/src/templates";
+import { bindActionHandler } from "card-tools/src/action";
 
 const OPTIONS = [
   "icon",
@@ -30,6 +31,9 @@ class TemplateEntityRow extends LitElement {
     this._config = {...config};
     this.state = {...this._config};
 
+    let entity_ids = this._config.entity_ids;
+    if(!entity_ids && this._config.entity && !hasTemplate(this._config.entity))
+      entity_ids = [this._config.entity];
     for(const k of OPTIONS) {
       if(this._config[k] && hasTemplate(this._config[k])) {
         subscribeRenderTemplate(null, (res) => {
@@ -38,7 +42,7 @@ class TemplateEntityRow extends LitElement {
         }, {
           template: this._config[k],
           variables: {config: this._config},
-          entity_ids: this._config.entity_ids,
+          entity_ids,
         });
       }
     }
@@ -75,7 +79,7 @@ class TemplateEntityRow extends LitElement {
 
     if(active !== undefined) {
       entity.attributes.brightness = 255;
-      entity.attributes.hs_color = this.state.color !== undefined
+      entity.attributes.hs_color = this.state.color !== undefined && !hasTemplate(this.state.color)
       ? JSON.parse(this.state.color)
       : [0,0];
     }
@@ -128,4 +132,10 @@ class TemplateEntityRow extends LitElement {
   }
 }
 
-customElements.define("template-entity-row", TemplateEntityRow);
+if(!customElements.get("template-entity-row")) {
+  customElements.define("template-entity-row", TemplateEntityRow);
+  const pjson = require('../package.json');
+  console.info(`%cTEMPLATE-ENTITY-ROW ${pjson.version} IS INSTALLED`,
+  "color: green; font-weight: bold",
+  "");
+}
