@@ -40,7 +40,7 @@ entities:
 ## Options
 - `icon`, `name`, `state`, `secondary`, `image` selects what icon, name, state, secondary_info text and entity_picture to display respectively.
 - `active` if this evaluates to "true", the icon gets the color `--paper-item-icon-active-color`. Otherwise `--paper-item-icon-color`.
-- `entity` if this evaluates to an entity id, `icon`, `name`, `state` and `image` will be taken from that entity unless manually overridden.
+- `entity` if this evaluates to an entity id, `icon`, `name`, `state` and `image` will be taken from that entity unless manually overridden. Specifying an `entity` will also let you use [`action`](https://www.home-assistant.io/lovelace/entities/#options-for-entities).
 - `condition` if this is set but does not evaluate to "true", the row is not displayed.
 
 All options accept [jinja2 templates](https://www.home-assistant.io/docs/configuration/templating/).

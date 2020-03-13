@@ -29,6 +29,7 @@ class TemplateEntityRow extends LitElement {
 
   setConfig(config) {
     this._config = {...config};
+    this.config = this._config;
     this.state = {...this._config};
 
     let entity_ids = this._config.entity_ids;
@@ -46,6 +47,23 @@ class TemplateEntityRow extends LitElement {
         });
       }
     }
+  }
+
+  async firstUpdated() {
+    const gen_row = this.shadowRoot.querySelector("#staging hui-generic-entity-row");
+    if(!gen_row) return;
+    await gen_row.updateComplete;
+    this._action = gen_row._handleAction;
+    const options = {
+      hasHold: this._config.hold_action !== undefined && this._config.hold_action.action !== undefined,
+      hasDoubleClick: this._config.hold_action !== undefined && this._config.hold_action.action !== undefined,
+    }
+    bindActionHandler(this.shadowRoot.querySelector("state-badge"), options);
+    bindActionHandler(this.shadowRoot.querySelector(".info"), options);
+  }
+
+  _actionHandler(ev) {
+    if(this._action) return this._action(ev);
   }
 
   render() {
@@ -89,6 +107,7 @@ class TemplateEntityRow extends LitElement {
         <state-badge
           .hass=${this.hass}
           .stateObj=${entity}
+          @action=${this._actionHandler};
           style=${active !== undefined
               ? active
                 ? "--paper-item-icon-color: var(--paper-item-icon-active-color, #fdd835);"
@@ -97,20 +116,27 @@ class TemplateEntityRow extends LitElement {
           }
           .overrideIcon=${icon}
           .overrideImage=${image}
+          class="pointer"
         ></state-badge>
-        <div class="flex">
-          <div
-            class="info"
-          >
+        <div
+          class="info pointer"
+          @action=${this._actionHandler};
+        >
             ${name}
             <div class="secondary">
               ${secondary}
             </div>
-          </div>
-          <div class="state">
-          ${state}
-          </div>
         </div>
+        <div class="state">
+          ${state}
+        </div>
+      </div>
+      <div id="staging">
+        <hui-generic-entity-row
+            .hass=${this.hass}
+            .config=${this._config}
+        >
+        </hui-generic-entity-row>
       </div>
     `;
   }
@@ -126,6 +152,9 @@ class TemplateEntityRow extends LitElement {
       }
       #wrapper {
         min-height: 40px;
+      }
+      #staging {
+        display: none;
       }
       `;
     return style;
