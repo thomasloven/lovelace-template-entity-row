@@ -1,0 +1,21 @@
+default_config:
+
+demo:
+
+lovelace:
+  mode: storage
+  dashboards:
+    lovelace-yaml:
+      mode: yaml
+      title: yaml
+      filename: lovelace.yaml
+
+input_boolean:
+  test:
+
+sensor:
+  - platform: time_date
+    display_options:
+      - time
+      - date
+      - date_time

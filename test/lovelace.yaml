@@ -1,0 +1,143 @@
+title: Template-entity-row
+views:
+  - title: Main
+    cards:
+      - type: entities
+        title: Static
+        entities:
+          - light.bed_light
+
+          - type: section
+            label: icon
+          - type: custom:template-entity-row
+            icon: mdi:cog
+
+          - type: section
+            label: name
+          - type: custom:template-entity-row
+            name: Name
+
+          - type: section
+            label: state
+          - type: custom:template-entity-row
+            state: state
+
+          - type: section
+            label: secondary
+          - type: custom:template-entity-row
+            secondary: secondary
+
+          - type: section
+            label: image
+          - type: custom:template-entity-row
+            image: https://placekitten.com/50/50
+
+
+      - type: entities
+        title: Entity based
+        entities:
+
+          - type: custom:template-entity-row
+            entity: light.bed_light
+
+          - type: section
+            label: icon
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            icon: mdi:cog
+
+          - type: section
+            label: name
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            name: name
+
+          - type: section
+            label: state
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            state: state
+
+          - type: section
+            label: secondary
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            secondary: secondary
+
+          - type: section
+            label: image
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            image: https://placekitten.com/50/50
+
+          - type: section
+            label: condition
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            condition: "{{is_state('input_boolean.test', 'on')}}"
+
+      - type: entities
+        title: Templates
+        entities:
+          - entity: input_boolean.test
+
+          - type: section
+            label: icon
+          - type: custom:template-entity-row
+            icon: "{% if is_state('input_boolean.test', 'on') %} mdi:cog {% else %} mdi:cog-outline {% endif %}"
+
+          - type: section
+            label: name
+          - type: custom:template-entity-row
+            name: "Name for{% if is_state('input_boolean.test', 'on') %} active {% else %} inactive {% endif %}state"
+
+          - type: section
+            label: state
+          - type: custom:template-entity-row
+            state: "[{{states('input_boolean.test')}}]"
+
+          - type: section
+            label: secondary
+          - type: custom:template-entity-row
+            secondary: "{{states('sensor.time')}} {{states('input_boolean.test')}}"
+
+          - type: section
+            label: image
+          - type: custom:template-entity-row
+            image: |
+                    {% set animal = 'kitten' if is_state('input_boolean.test', 'off') else 'bear' -%}
+                    https://place{{animal}}.com/100/100
+
+          - type: section
+            label: active
+          - type: custom:template-entity-row
+            icon: mdi:cog
+            active: "{{is_state('input_boolean.test', 'on')}}"
+
+          - type: section
+            label: condition
+          - type: custom:template-entity-row
+            name: conditional
+            condition: "{{is_state('input_boolean.test', 'on')}}"
+
+          - type: section
+            label: color (undocumented)
+          - type: custom:template-entity-row
+            icon: mdi:cog
+            color: "rgb{{state_attr('light.bed_light', 'rgb_color')}}"
+            active: "true"
+
+      - type: entities
+        title: Demo
+        entities:
+          - entity: input_boolean.test
+          - type: custom:template-entity-row
+            icon: mdi:lamp
+            name: "The light is {{states('light.bed_light')}} but nobody's"
+            state: "{% if is_state('input_boolean.test', 'on')%} home {% else %} away {% endif %}"
+            secondary: "It's {{states('sensor.time')}}"
+            active: "{{ is_state('light.bed_light', 'off') }}"
+          - type: custom:template-entity-row
+            icon: mdi:car
+            name: Hi there
+            condition: "{{is_state('input_boolean.car_home', 'on')}}"

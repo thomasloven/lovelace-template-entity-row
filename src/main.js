@@ -97,23 +97,24 @@ class TemplateEntityRow extends LitElement {
 
     if(active !== undefined) {
       entity.attributes.brightness = 255;
-      entity.attributes.hs_color = this.state.color !== undefined && !hasTemplate(this.state.color)
-      ? JSON.parse(this.state.color)
-      : [0,0];
     }
+
+    const color = this.state.color !== undefined
+      ? this.state.color
+      : active === undefined
+        ? undefined
+        : active
+          ? "var(--paper-item-icon-active-color, #fdd835)"
+          : "var(--paper-item-icon-color, #44739e)"
+      ;
 
     return html`
       <div id="wrapper">
         <state-badge
           .hass=${this.hass}
           .stateObj=${entity}
-          @action=${this._actionHandler};
-          style=${active !== undefined
-              ? active
-                ? "--paper-item-icon-color: var(--paper-item-icon-active-color, #fdd835);"
-                : "--paper-item-icon-active-color: var(--paper-item-icon-color, #44739e);"
-              : ""
-          }
+          @action=${this._actionHandler}
+          style="${color ? `--paper-item-icon-color: ${color}; --paper-item-icon-active-color: ${color};`:``}"
           .overrideIcon=${icon}
           .overrideImage=${image}
           class="pointer"
