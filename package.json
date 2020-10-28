@@ -1,7 +1,7 @@
 {
   "name": "template-entity-row",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "",
   "scripts": {
     "build": "webpack",
@@ -16,8 +16,8 @@
   "author": "Thomas Lovén",
   "license": "MIT",
   "devDependencies": {
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12"
   },
   "dependencies": {
     "card-tools": "github:thomasloven/lovelace-card-tools"
