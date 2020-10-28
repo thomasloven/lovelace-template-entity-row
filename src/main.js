@@ -67,9 +67,6 @@ class TemplateEntityRow extends LitElement {
   }
 
   render() {
-    if (this.state.condition !== undefined && String(this.state.condition).toLowerCase() !== "true")
-      return html``;
-
     const base = this.hass.states[this.state.entity];
     const entity = base && JSON.parse(JSON.stringify(base)) || {
       entity_id: "light.",
@@ -109,7 +106,7 @@ class TemplateEntityRow extends LitElement {
       ;
 
     return html`
-      <div id="wrapper">
+      <div id="wrapper" class="${(this.state.condition !== undefined && String(this.state.condition).toLowerCase() !== "true") ? 'hidden' : ''}">
         <state-badge
           .hass=${this.hass}
           .stateObj=${entity}
@@ -153,6 +150,9 @@ class TemplateEntityRow extends LitElement {
       }
       #wrapper {
         min-height: 40px;
+      }
+      #wrapper.hidden {
+        display: none;
       }
       #staging {
         display: none;
