@@ -106,7 +106,7 @@ class TemplateEntityRow extends LitElement {
       ;
 
     return html`
-      <div id="wrapper" class="${(this.state.condition !== undefined && String(this.state.condition).toLowerCase() !== "true") ? 'hidden' : ''}">
+      <div id="wrapper" class="${((this.state.condition !== undefined && String(this.state.condition).toLowerCase() !== "true") || OPTIONS.some(o => hasTemplate(this.state[o]))) ? 'hidden' : ''}">
         <state-badge
           .hass=${this.hass}
           .stateObj=${entity}
