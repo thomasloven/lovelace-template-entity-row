@@ -141,7 +141,7 @@ class TemplateEntityRow extends LitElement {
 
   static get styles() {
     const HuiGenericEntityRow = customElements.get('hui-generic-entity-row');
-    let style = HuiGenericEntityRow.styles;
+    const style = Object.create(HuiGenericEntityRow.styles);
     style.cssText = style.cssText
       .replace(":host", "#wrapper")
       + `
