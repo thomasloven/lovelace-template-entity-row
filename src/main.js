@@ -147,10 +147,8 @@ class TemplateEntityRow extends LitElement {
   }
 
   static get styles() {
-    const HuiGenericEntityRow = customElements.get("hui-generic-entity-row");
-    const style = Object.create(HuiGenericEntityRow.styles);
     return [
-      style,
+      customElements.get("hui-generic-entity-row").styles,
       css`
         :host {
           display: inline;

@@ -22,7 +22,7 @@
         <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         </hui-generic-entity-row>
       </div>
-    `}static get styles(){const t=customElements.get("hui-generic-entity-row");return[Object.create(t.styles),s`
+    `}static get styles(){return[customElements.get("hui-generic-entity-row").styles,s`
         :host {
           display: inline;
         }
