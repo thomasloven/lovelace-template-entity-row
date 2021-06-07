@@ -1,7 +1,9 @@
 import { LitElement, html, css } from "lit";
 import { property } from "lit/decorators.js";
-import { subscribeRenderTemplate, hasTemplate } from "card-tools/src/templates";
+import { hasTemplate } from "card-tools/src/templates";
 import { bindActionHandler } from "card-tools/src/action";
+import pjson from "../package.json";
+import { bind_template } from "./templates";
 
 const OPTIONS = [
   "icon",
@@ -20,31 +22,28 @@ const OPTIONS = [
 ];
 
 class TemplateEntityRow extends LitElement {
-  @property() _config;
+  @property() config;
   @property() hass;
   @property() state;
   @property() _action;
 
   setConfig(config) {
-    this._config = { ...config };
-    this.state = { ...this._config };
+    this.config = { ...config };
+    this.state = { ...this.config };
 
-    let entity_ids = this._config.entity_ids;
-    if (!entity_ids && this._config.entity && !hasTemplate(this._config.entity))
-      entity_ids = [this._config.entity];
+    let entity_ids = this.config.entity_ids;
+    if (!entity_ids && this.config.entity && !hasTemplate(this.config.entity))
+      entity_ids = [this.config.entity];
     for (const k of OPTIONS) {
-      if (this._config[k] && hasTemplate(this._config[k])) {
-        subscribeRenderTemplate(
-          null,
+      if (this.config[k] && hasTemplate(this.config[k])) {
+        bind_template(
           (res) => {
-            this.state[k] = res;
-            this.requestUpdate();
+            const state = { ...this.state };
+            state[k] = res;
+            this.state = state;
           },
-          {
-            template: this._config[k],
-            variables: { config: this._config },
-            entity_ids,
-          }
+          this.config[k],
+          { config }
         );
       }
     }
@@ -58,12 +57,8 @@ class TemplateEntityRow extends LitElement {
     await gen_row.updateComplete;
     this._action = gen_row._handleAction;
     const options = {
-      hasHold:
-        this._config.hold_action !== undefined &&
-        this._config.hold_action.action !== undefined,
-      hasDoubleClick:
-        this._config.hold_action !== undefined &&
-        this._config.hold_action.action !== undefined,
+      hasHold: this.config.hold_action?.action !== undefined,
+      hasDoubleClick: this.config.hold_action?.action !== undefined,
     };
     bindActionHandler(this.shadowRoot.querySelector("state-badge"), options);
     bindActionHandler(this.shadowRoot.querySelector(".info"), options);
@@ -80,38 +75,23 @@ class TemplateEntityRow extends LitElement {
       attributes: { icon: "no:icon" },
     };
 
-    const icon =
-      this.state.icon !== undefined ? this.state.icon || "no:icon" : undefined;
+    const icon = this.state.icon ?? "no:icon";
     const image = this.state.image;
     const name =
-      this.state.name !== undefined
-        ? this.state.name
-        : base
-        ? base.attributes.friendly_name || base.entity_id
-        : undefined;
+      this.state.name ?? (base?.attributes?.friendly_name || base?.entity_id);
     const secondary = this.state.secondary;
-    const state =
-      this.state.state !== undefined
-        ? this.state.state
-        : entity
-        ? entity.state
-        : undefined;
-    const active =
-      this.state.active !== undefined
-        ? String(this.state.active).toLowerCase() === "true"
-        : undefined;
+    const state = this.state.state ?? entity?.state;
+    const active = this.state.active;
     if (active !== undefined) {
       entity.attributes.brightness = 255;
     }
 
+    const thisStyles = window.getComputedStyle(this);
     const color =
-      this.state.color !== undefined
-        ? this.state.color
-        : active === undefined
-        ? undefined
-        : active
-        ? "var(--paper-item-icon-active-color, #fdd835)"
-        : "var(--paper-item-icon-color, #44739e)";
+      this.state.color ??
+      (active !== undefined && active
+        ? thisStyles.getPropertyValue("--paper-item-icon-active-color")
+        : thisStyles.getPropertyValue("--paper-item-icon-color"));
     return html`
       <div
         id="wrapper"
@@ -131,14 +111,14 @@ class TemplateEntityRow extends LitElement {
           .overrideImage=${image}
           class="pointer"
         ></state-badge>
-        <div class="info pointer" @action="${this._actionHandler};">
+        <div class="info pointer" @action="${this._actionHandler}">
           ${name}
           <div class="secondary">${secondary}</div>
         </div>
         <div class="state">${state}</div>
       </div>
       <div id="staging">
-        <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
+        <hui-generic-entity-row .hass=${this.hass} .config=${this.config}>
         </hui-generic-entity-row>
       </div>
     `;
@@ -175,7 +155,6 @@ class TemplateEntityRow extends LitElement {
 
 if (!customElements.get("template-entity-row")) {
   customElements.define("template-entity-row", TemplateEntityRow);
-  const pjson = require("../package.json");
   console.info(
     `%cTEMPLATE-ENTITY-ROW ${pjson.version} IS INSTALLED`,
     "color: green; font-weight: bold",

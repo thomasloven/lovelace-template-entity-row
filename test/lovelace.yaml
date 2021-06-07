@@ -32,11 +32,9 @@ views:
           - type: custom:template-entity-row
             image: https://placekitten.com/50/50
 
-
       - type: entities
         title: Entity based
         entities:
-
           - type: custom:template-entity-row
             entity: light.bed_light
 
@@ -105,8 +103,8 @@ views:
             label: image
           - type: custom:template-entity-row
             image: |
-                    {% set animal = 'kitten' if is_state('input_boolean.test', 'off') else 'bear' -%}
-                    https://place{{animal}}.com/100/100
+              {% set animal = 'kitten' if is_state('input_boolean.test', 'off') else 'bear' -%}
+              https://place{{animal}}.com/100/100
 
           - type: section
             label: active
