@@ -1,4 +1,5 @@
-import { LitElement, html, css } from "card-tools/src/lit-element";
+import { LitElement, html, css } from "lit";
+import { property } from "lit/decorators.js";
 import { subscribeRenderTemplate, hasTemplate } from "card-tools/src/templates";
 import { bindActionHandler } from "card-tools/src/action";
 
@@ -19,16 +20,13 @@ const OPTIONS = [
 ];
 
 class TemplateEntityRow extends LitElement {
-  static get properties() {
-    return {
-      hass: {},
-      state: {},
-    };
-  }
+  @property() _config;
+  @property() hass;
+  @property() state;
+  @property() _action;
 
   setConfig(config) {
     this._config = { ...config };
-    this.config = this._config;
     this.state = { ...this._config };
 
     let entity_ids = this._config.entity_ids;
@@ -55,7 +53,7 @@ class TemplateEntityRow extends LitElement {
   async firstUpdated() {
     const gen_row = this.shadowRoot.querySelector(
       "#staging hui-generic-entity-row"
-    );
+    ) as any;
     if (!gen_row) return;
     await gen_row.updateComplete;
     this._action = gen_row._handleAction;
