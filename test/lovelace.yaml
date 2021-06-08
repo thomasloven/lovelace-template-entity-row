@@ -43,18 +43,27 @@ views:
           - type: custom:template-entity-row
             entity: light.bed_light
             icon: mdi:cog
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            icon:
 
           - type: section
             label: name
           - type: custom:template-entity-row
             entity: light.bed_light
             name: name
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            name:
 
           - type: section
             label: state
           - type: custom:template-entity-row
             entity: light.bed_light
             state: state
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            state:
 
           - type: section
             label: secondary

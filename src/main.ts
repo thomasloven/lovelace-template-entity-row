@@ -75,12 +75,16 @@ class TemplateEntityRow extends LitElement {
       attributes: { icon: "no:icon" },
     };
 
-    const icon = this.state.icon ?? "no:icon";
+    const icon =
+      this.state.icon !== undefined ? this.state.icon || "no:icon" : undefined;
     const image = this.state.image;
     const name =
-      this.state.name ?? (base?.attributes?.friendly_name || base?.entity_id);
+      this.state.name !== undefined
+        ? this.state.name
+        : base?.attributes?.friendly_name || base?.entity_id;
     const secondary = this.state.secondary;
-    const state = this.state.state ?? entity?.state;
+    const state =
+      this.state.state !== undefined ? this.state.state : entity?.state;
     const active = this.state.active;
     if (active !== undefined) {
       entity.attributes.brightness = 255;
@@ -88,10 +92,12 @@ class TemplateEntityRow extends LitElement {
 
     const thisStyles = window.getComputedStyle(this);
     const color =
-      this.state.color ??
-      (active !== undefined && active
-        ? thisStyles.getPropertyValue("--paper-item-icon-active-color")
-        : thisStyles.getPropertyValue("--paper-item-icon-color"));
+      this.state.color !== undefined || active !== undefined
+        ? this.state.color ??
+          (active !== undefined && active
+            ? thisStyles.getPropertyValue("--paper-item-icon-active-color")
+            : thisStyles.getPropertyValue("--paper-item-icon-color"))
+        : undefined;
     return html`
       <div
         id="wrapper"
