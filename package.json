@@ -1,7 +1,7 @@
 {
   "name": "template-entity-row",
   "private": true,
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "",
   "scripts": {
     "build": "rollup -c",

@@ -4,6 +4,7 @@ import { hasTemplate } from "card-tools/src/templates";
 import { bindActionHandler } from "card-tools/src/action";
 import pjson from "../package.json";
 import { bind_template } from "./templates";
+import { hass } from "card-tools/src/hass";
 
 const OPTIONS = [
   "icon",
@@ -45,7 +46,7 @@ class TemplateEntityRow extends LitElement {
               res = res.replace(
                 LOCALIZE_PATTERN,
                 (key) =>
-                  this.hass.localize(key.substring(2, key.length - 1)) || key
+                  hass().localize(key.substring(2, key.length - 1)) || key
               );
             state[k] = res;
             this.state = state;
