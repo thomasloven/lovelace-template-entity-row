@@ -135,6 +135,13 @@ views:
             active: "true"
 
       - type: entities
+        title: Localize
+        entities:
+          - type: custom:template-entity-row
+            name: "State is: _(component.binary_sensor.state.motion.on)"
+            state: '{{ "_(component.binary_sensor.state.motion.on)" }}'
+
+      - type: entities
         title: Demo
         entities:
           - entity: input_boolean.test

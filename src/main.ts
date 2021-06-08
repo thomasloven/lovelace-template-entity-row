@@ -21,6 +21,8 @@ const OPTIONS = [
   "color",
 ];
 
+const LOCALIZE_PATTERN = /_\([^)]*\)/g;
+
 class TemplateEntityRow extends LitElement {
   @property() config;
   @property() hass;
@@ -39,6 +41,12 @@ class TemplateEntityRow extends LitElement {
         bind_template(
           (res) => {
             const state = { ...this.state };
+            if (typeof res === "string")
+              res = res.replace(
+                LOCALIZE_PATTERN,
+                (key) =>
+                  this.hass.localize(key.substring(2, key.length - 1)) || key
+              );
             state[k] = res;
             this.state = state;
           },
