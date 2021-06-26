@@ -82,6 +82,18 @@ views:
           - type: custom:template-entity-row
             entity: light.bed_light
             condition: "{{is_state('input_boolean.test', 'on')}}"
+          - type: section
+            label: toggle
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            toggle: true
+          - type: custom:template-entity-row
+            name: No Entity
+            toggle: true
+          - type: custom:template-entity-row
+            name: Conditional
+            entity: light.bed_light
+            toggle: "{{is_state(config.entity, 'on')}}"
 
       - type: entities
         title: Templates
@@ -155,3 +167,31 @@ views:
             icon: mdi:car
             name: Hi there
             condition: "{{is_state('input_boolean.car_home', 'on')}}"
+
+      - type: entities
+        title: Tap action
+        entities:
+          - entity: input_boolean.test
+          - type: custom:template-entity-row
+            entity: input_boolean.test
+          - type: custom:template-entity-row
+            entity: input_boolean.test
+            name: "{% if is_state(config.entity, 'on') %} Toggle {% else %} More info {% endif %}"
+            tap_action: "{'action': '{% if is_state('input_boolean.test', 'on') %}toggle{% else %}more-info{% endif %}'}"
+            hold_action:
+              action: more-info
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            # Standard yaml configuration - No templates allowed
+            hold_action:
+              action: more-info
+            # JSON return format
+            tap_action: |
+              {
+                "action": "toggle",
+                "confirmation": {
+                  "text": "Do you really want to turn {{ state_attr(config.entity, 'friendly_name') }} {% if is_state(config.entity, 'on') %}off{% else %}on{% endif %}?",
+                },
+              }
+            double_tap_action:
+              action: toggle

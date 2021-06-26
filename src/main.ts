@@ -20,28 +20,32 @@ const OPTIONS = [
   // with hue in the range 0-360 and saturation 0-100.
   // Works only if entity is unset and active is set.
   "color",
+  "toggle",
+  "tap_action",
+  "hold_action",
+  "double_tap_action",
 ];
 
 const LOCALIZE_PATTERN = /_\([^)]*\)/g;
 
 class TemplateEntityRow extends LitElement {
-  @property() config;
+  @property() _config;
   @property() hass;
-  @property() state;
+  @property() config;
   @property() _action;
 
   setConfig(config) {
-    this.config = { ...config };
-    this.state = { ...this.config };
+    this._config = { ...config };
+    this.config = { ...this._config };
 
-    let entity_ids = this.config.entity_ids;
-    if (!entity_ids && this.config.entity && !hasTemplate(this.config.entity))
-      entity_ids = [this.config.entity];
+    let entity_ids = this._config.entity_ids;
+    if (!entity_ids && this._config.entity && !hasTemplate(this._config.entity))
+      entity_ids = [this._config.entity];
     for (const k of OPTIONS) {
-      if (this.config[k] && hasTemplate(this.config[k])) {
+      if (this._config[k] && hasTemplate(this._config[k])) {
         bind_template(
           (res) => {
-            const state = { ...this.state };
+            const state = { ...this.config };
             if (typeof res === "string")
               res = res.replace(
                 LOCALIZE_PATTERN,
@@ -49,9 +53,9 @@ class TemplateEntityRow extends LitElement {
                   hass().localize(key.substring(2, key.length - 1)) || key
               );
             state[k] = res;
-            this.state = state;
+            this.config = state;
           },
-          this.config[k],
+          this._config[k],
           { config }
         );
       }
@@ -66,8 +70,8 @@ class TemplateEntityRow extends LitElement {
     await gen_row.updateComplete;
     this._action = gen_row._handleAction;
     const options = {
-      hasHold: this.config.hold_action?.action !== undefined,
-      hasDoubleClick: this.config.hold_action?.action !== undefined,
+      hasHold: this._config.hold_action !== undefined,
+      hasDoubleClick: this._config.hold_action !== undefined,
     };
     bindActionHandler(this.shadowRoot.querySelector("state-badge"), options);
     bindActionHandler(this.shadowRoot.querySelector(".info"), options);
@@ -78,31 +82,33 @@ class TemplateEntityRow extends LitElement {
   }
 
   render() {
-    const base = this.hass.states[this.state.entity];
+    const base = this.hass.states[this.config.entity];
     const entity = (base && JSON.parse(JSON.stringify(base))) || {
       entity_id: "light.",
       attributes: { icon: "no:icon" },
     };
 
     const icon =
-      this.state.icon !== undefined ? this.state.icon || "no:icon" : undefined;
-    const image = this.state.image;
+      this.config.icon !== undefined
+        ? this.config.icon || "no:icon"
+        : undefined;
+    const image = this.config.image;
     const name =
-      this.state.name !== undefined
-        ? this.state.name
+      this.config.name !== undefined
+        ? this.config.name
         : base?.attributes?.friendly_name || base?.entity_id;
-    const secondary = this.state.secondary;
+    const secondary = this.config.secondary;
     const state =
-      this.state.state !== undefined ? this.state.state : entity?.state;
-    const active = this.state.active;
+      this.config.state !== undefined ? this.config.state : entity?.state;
+    const active = this.config.active;
     if (active !== undefined) {
       entity.attributes.brightness = 255;
     }
 
     const thisStyles = window.getComputedStyle(this);
     const color =
-      this.state.color !== undefined || active !== undefined
-        ? this.state.color ??
+      this.config.color !== undefined || active !== undefined
+        ? this.config.color ??
           (active !== undefined && active
             ? thisStyles.getPropertyValue("--paper-item-icon-active-color")
             : thisStyles.getPropertyValue("--paper-item-icon-color"))
@@ -110,8 +116,8 @@ class TemplateEntityRow extends LitElement {
     return html`
       <div
         id="wrapper"
-        class="${this.state.condition !== undefined &&
-        String(this.state.condition).toLowerCase() !== "true"
+        class="${this.config.condition !== undefined &&
+        String(this.config.condition).toLowerCase() !== "true"
           ? "hidden"
           : ""}"
       >
@@ -130,7 +136,14 @@ class TemplateEntityRow extends LitElement {
           ${name}
           <div class="secondary">${secondary}</div>
         </div>
-        <div class="state">${state}</div>
+        <div class="state">
+          ${this.config.toggle && base
+            ? html`<ha-entity-toggle
+                .hass=${this.hass}
+                .stateObj=${entity}
+              ></ha-entity-toggle>`
+            : state}
+        </div>
       </div>
       <div id="staging">
         <hui-generic-entity-row .hass=${this.hass} .config=${this.config}>
