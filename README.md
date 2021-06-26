@@ -67,7 +67,7 @@ document.querySelector("home-assistant").hass.resources;
 
 ### Actions
 
-`tap_action`, `hold_action` and `double_tap_action` can be templated if the template evaluates to a valid [action configuration](https://www.home-assistant.io/lovelace/actions/) in JSON format. Standard YAML without templates works too.
+`tap_action`, `hold_action` and `double_tap_action` can be templated if the template evaluates to a valid [action configuration](https://www.home-assistant.io/lovelace/actions/) in python format. Standard YAML without templates works too.
 
 Eg:
 
