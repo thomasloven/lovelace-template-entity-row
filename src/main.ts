@@ -173,6 +173,9 @@ class TemplateEntityRow extends LitElement {
         #wrapper.hidden {
           display: none;
         }
+        #wrapper .info.pointer .secondary {
+          white-space: pre;
+        }        
         #staging {
           display: none;
         }
