@@ -34,6 +34,11 @@ class TemplateEntityRow extends LitElement {
   @property() config;
   @property() _action;
 
+  localize(match) {
+    const params = match.substring(2, match.length - 1).split(new RegExp(/\s*,\s*/));
+    return hass().localize.apply(null, params) || match;
+  }
+
   setConfig(config) {
     this._config = { ...config };
     this.config = { ...this._config };
@@ -49,8 +54,7 @@ class TemplateEntityRow extends LitElement {
             if (typeof res === "string")
               res = res.replace(
                 LOCALIZE_PATTERN,
-                (key) =>
-                  hass().localize(key.substring(2, key.length - 1)) || key
+                this.localize
               );
             state[k] = res;
             this.config = state;
