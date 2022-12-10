@@ -84,7 +84,7 @@ class TemplateEntityRow extends LitElement {
   render() {
     const base = this.hass.states[this.config.entity];
     const entity = (base && JSON.parse(JSON.stringify(base))) || {
-      entity_id: "light.",
+      entity_id: "binary_sensor.",
       attributes: { icon: "no:icon" },
     };
 
