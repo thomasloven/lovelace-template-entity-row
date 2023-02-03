@@ -82,11 +82,7 @@ class TemplateEntityRow extends LitElement {
   }
 
   render() {
-    const base = this.hass.states[this.config.entity];
-    const entity = (base && JSON.parse(JSON.stringify(base))) || {
-      entity_id: "light.",
-      attributes: { icon: "no:icon" },
-    };
+    const entity = this.hass.states[this.config.entity];
 
     const icon =
       this.config.icon !== undefined
@@ -110,7 +106,7 @@ class TemplateEntityRow extends LitElement {
       this.config.color !== undefined || active !== undefined
         ? this.config.color ??
           (active !== undefined && active
-            ? thisStyles.getPropertyValue("--paper-item-icon-active-color")
+            ? thisStyles.getPropertyValue("--state-active-color")
             : thisStyles.getPropertyValue("--paper-item-icon-color"))
         : undefined;
     return html`
