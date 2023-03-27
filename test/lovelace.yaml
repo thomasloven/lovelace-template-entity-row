@@ -145,6 +145,14 @@ views:
             icon: mdi:cog
             color: "rgb{{state_attr('light.bed_light', 'rgb_color')}}"
             active: "true"
+          - type: custom:template-entity-row
+            icon: mdi:cog
+            name: Changing
+            color: "{{'teal' if is_state('input_boolean.test', 'on') else 'purple' }}"
+          - type: custom:template-entity-row
+            icon: mdi:cog
+            name: Changing
+            color: "{{'purple' if is_state('input_boolean.test', 'on') else '' }}"
 
       - type: entities
         title: Localize
@@ -199,6 +207,11 @@ views:
               action: url
               url_path: >
                 {{state_attr(config.entity,'latest_release_url')}}
+          - type: custom:template-entity-row
+            name: No entity
+            tap_action:
+              action: url
+              url_path: https://www.google.com
 
       - type: entities
         entities:
