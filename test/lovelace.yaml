@@ -46,6 +46,18 @@ views:
           - type: custom:template-entity-row
             entity: light.bed_light
             icon:
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            active: true
+            name: Active
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            active: false
+            name: Inactive
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            name: Color
+            color: magenta
 
           - type: section
             label: name

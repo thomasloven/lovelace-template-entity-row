@@ -106,7 +106,7 @@ class TemplateEntityRow extends LitElement {
         ? this.config.icon || "no:icon"
         : undefined;
     const image = this.config.image;
-    const color = this.config.color;
+    let color = this.config.color;
 
     const name =
       this.config.name ??
@@ -119,6 +119,10 @@ class TemplateEntityRow extends LitElement {
     if (active) {
       entity.attributes.brightness = 255;
       entity.state = "on";
+    }
+    if (this.config.active === false) {
+      entity.state = "off";
+      color = color ?? "var(--paper-item-icon-color, #44739e)";
     }
 
     const hidden =
