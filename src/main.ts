@@ -28,6 +28,13 @@ const OPTIONS = [
 
 const LOCALIZE_PATTERN = /_\([^)]*\)/g;
 
+const translate = (hass, text) => {
+  return text.replace(
+    LOCALIZE_PATTERN,
+    (key) => hass.localize(key.substring(2, key.length - 1)) || key
+  );
+};
+
 class TemplateEntityRow extends LitElement {
   @property() _config;
   @property() hass;
@@ -42,22 +49,20 @@ class TemplateEntityRow extends LitElement {
     if (!entity_ids && this._config.entity && !hasTemplate(this._config.entity))
       entity_ids = [this._config.entity];
     for (const k of OPTIONS) {
-      if (this._config[k] && hasTemplate(this._config[k])) {
+      if (!this._config[k]) continue;
+      if (hasTemplate(this._config[k])) {
         bind_template(
           (res) => {
             const state = { ...this.config };
-            if (typeof res === "string")
-              res = res.replace(
-                LOCALIZE_PATTERN,
-                (key) =>
-                  hass().localize(key.substring(2, key.length - 1)) || key
-              );
+            if (typeof res === "string") res = translate(hass(), res);
             state[k] = res;
             this.config = state;
           },
           this._config[k],
           { config }
         );
+      } else if (typeof this._config[k] === "string") {
+        this.config[k] = translate(hass(), this._config[k]);
       }
     }
   }
@@ -86,6 +91,7 @@ class TemplateEntityRow extends LitElement {
     const entity = (base && JSON.parse(JSON.stringify(base))) || {
       entity_id: "light.",
       attributes: { icon: "no:icon" },
+      state: "off",
     };
 
     const icon =
@@ -100,33 +106,32 @@ class TemplateEntityRow extends LitElement {
     const secondary = this.config.secondary;
     const state =
       this.config.state !== undefined ? this.config.state : entity?.state;
-    const active = this.config.active;
-    if (active !== undefined) {
+    const active = this.config.active ?? false;
+    if (active) {
       entity.attributes.brightness = 255;
+      entity.state = "on";
     }
 
     const thisStyles = window.getComputedStyle(this);
     const color =
-      this.config.color !== undefined || active !== undefined
+      this.config.color !== undefined || active
         ? this.config.color ??
-          (active !== undefined && active
-            ? thisStyles.getPropertyValue("--paper-item-icon-active-color")
+          (active
+            ? thisStyles.getPropertyValue("--state-active-color")
             : thisStyles.getPropertyValue("--paper-item-icon-color"))
         : undefined;
+
+    const hidden =
+      this.config.condition !== undefined &&
+      String(this.config.condition).toLowerCase() !== "true";
     return html`
-      <div
-        id="wrapper"
-        class="${this.config.condition !== undefined &&
-        String(this.config.condition).toLowerCase() !== "true"
-          ? "hidden"
-          : ""}"
-      >
+      <div id="wrapper" class="${hidden ? "hidden" : ""}">
         <state-badge
           .hass=${this.hass}
           .stateObj=${entity}
           @action=${this._actionHandler}
           style="${color
-            ? `--paper-item-icon-color: ${color}; --paper-item-icon-active-color: ${color};`
+            ? `--paper-item-icon-color: ${color}; --state-active-color: ${color}; --state-light-active-color: ${color}`
             : ``}"
           .overrideIcon=${icon}
           .overrideImage=${image}
@@ -154,7 +159,7 @@ class TemplateEntityRow extends LitElement {
 
   static get styles() {
     return [
-      customElements.get("hui-generic-entity-row").styles,
+      (customElements.get("hui-generic-entity-row") as any)?.styles,
       css`
         :host {
           display: inline;

@@ -4,7 +4,9 @@
       "moduleResolution": "node",
       "resolveJsonModule": true,
       "allowSyntheticDefaultImports": true,
-      "experimentalDecorators": true
+      "experimentalDecorators": true,
+      "paths": {
+        "tslib": ["./node_modules/tslib/tslib.d.ts"]
+      }
     }
   }
-  

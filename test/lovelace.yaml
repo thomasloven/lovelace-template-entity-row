@@ -150,8 +150,8 @@ views:
         title: Localize
         entities:
           - type: custom:template-entity-row
-            name: "State is: _(component.binary_sensor.state.motion.on)"
-            state: '{{ "_(component.binary_sensor.state.motion.on)" }}'
+            name: "State is: _(ui.card.update.installing)"
+            state: '{{ "_(ui.card.update.installing)" }}'
 
       - type: entities
         title: Demo
@@ -195,3 +195,16 @@ views:
               }
             double_tap_action:
               action: toggle
+            hold_action:
+              action: url
+              url_path: >
+                {{state_attr(config.entity,'latest_release_url')}}
+
+      - type: entities
+        entities:
+          - entity: light.bed_light
+            type: custom:template-entity-row
+          - entity: light.ceiling_lights
+            type: custom:template-entity-row
+          - entity: light.kitchen_lights
+            type: custom:template-entity-row
