@@ -46,6 +46,18 @@ views:
           - type: custom:template-entity-row
             entity: light.bed_light
             icon:
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            active: true
+            name: Active
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            active: false
+            name: Inactive
+          - type: custom:template-entity-row
+            entity: light.bed_light
+            name: Color
+            color: magenta
 
           - type: section
             label: name
@@ -145,13 +157,21 @@ views:
             icon: mdi:cog
             color: "rgb{{state_attr('light.bed_light', 'rgb_color')}}"
             active: "true"
+          - type: custom:template-entity-row
+            icon: mdi:cog
+            name: Changing
+            color: "{{'teal' if is_state('input_boolean.test', 'on') else 'purple' }}"
+          - type: custom:template-entity-row
+            icon: mdi:cog
+            name: Changing
+            color: "{{'purple' if is_state('input_boolean.test', 'on') else '' }}"
 
       - type: entities
         title: Localize
         entities:
           - type: custom:template-entity-row
-            name: "State is: _(component.binary_sensor.state.motion.on)"
-            state: '{{ "_(component.binary_sensor.state.motion.on)" }}'
+            name: "State is: _(ui.card.update.installing)"
+            state: '{{ "_(ui.card.update.installing)" }}'
 
       - type: entities
         title: Demo
@@ -195,3 +215,21 @@ views:
               }
             double_tap_action:
               action: toggle
+            hold_action:
+              action: url
+              url_path: >
+                {{state_attr(config.entity,'latest_release_url')}}
+          - type: custom:template-entity-row
+            name: No entity
+            tap_action:
+              action: url
+              url_path: https://www.google.com
+
+      - type: entities
+        entities:
+          - entity: light.bed_light
+            type: custom:template-entity-row
+          - entity: light.ceiling_lights
+            type: custom:template-entity-row
+          - entity: light.kitchen_lights
+            type: custom:template-entity-row

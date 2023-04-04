@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { property } from "lit/decorators.js";
+import { classMap } from "lit/directives/class-map.js";
 import { hasTemplate } from "card-tools/src/templates";
 import { bindActionHandler } from "card-tools/src/action";
 import pjson from "../package.json";
@@ -28,45 +29,48 @@ const OPTIONS = [
 
 const LOCALIZE_PATTERN = /_\([^)]*\)/g;
 
+const translate = (hass, text: String) => {
+  return text.replace(
+    LOCALIZE_PATTERN,
+    (key) => {
+        const params = key.substring(2, key.length - 1).split(new RegExp(/\s*,\s*/));
+        return hass.localize.apply(null, params) || key;
+    }
+  );
+};
+
 class TemplateEntityRow extends LitElement {
   @property() _config;
   @property() hass;
-  @property() config;
+  @property() config; // Rendered configuration of the row to display
   @property() _action;
-
-  localize(match) {
-    const params = match.substring(2, match.length - 1).split(new RegExp(/\s*,\s*/));
-    return hass().localize.apply(null, params) || match;
-  }
 
   setConfig(config) {
     this._config = { ...config };
     this.config = { ...this._config };
 
-    let entity_ids = this._config.entity_ids;
-    if (!entity_ids && this._config.entity && !hasTemplate(this._config.entity))
-      entity_ids = [this._config.entity];
     for (const k of OPTIONS) {
-      if (this._config[k] && hasTemplate(this._config[k])) {
+      if (!this._config[k]) continue;
+      if (hasTemplate(this._config[k])) {
         bind_template(
           (res) => {
             const state = { ...this.config };
-            if (typeof res === "string")
-              res = res.replace(
-                LOCALIZE_PATTERN,
-                this.localize
-              );
+            if (typeof res === "string") res = translate(hass(), res);
             state[k] = res;
             this.config = state;
           },
           this._config[k],
           { config }
         );
+      } else if (typeof this._config[k] === "string") {
+        this.config[k] = translate(hass(), this._config[k]);
       }
     }
   }
 
   async firstUpdated() {
+    // Hijack the action handler from the hidden generic entity row in the #staging area
+    // Much easier than trying to implement all of this ourselves
     const gen_row = this.shadowRoot.querySelector(
       "#staging hui-generic-entity-row"
     ) as any;
@@ -77,19 +81,27 @@ class TemplateEntityRow extends LitElement {
       hasHold: this._config.hold_action !== undefined,
       hasDoubleClick: this._config.hold_action !== undefined,
     };
-    bindActionHandler(this.shadowRoot.querySelector("state-badge"), options);
-    bindActionHandler(this.shadowRoot.querySelector(".info"), options);
+    if (
+      this.config.entity ||
+      this.config.tap_action ||
+      this.config.hold_action ||
+      this.config.double_tap_action
+    ) {
+      bindActionHandler(this.shadowRoot.querySelector("state-badge"), options);
+      bindActionHandler(this.shadowRoot.querySelector(".info"), options);
+    }
   }
 
   _actionHandler(ev) {
-    if (this._action) return this._action(ev);
+    return this._action?.(ev);
   }
 
   render() {
     const base = this.hass.states[this.config.entity];
     const entity = (base && JSON.parse(JSON.stringify(base))) || {
       entity_id: "light.",
-      attributes: { icon: "no:icon" },
+      attributes: { icon: "no:icon", friendly_name: "" },
+      state: "off",
     };
 
     const icon =
@@ -97,55 +109,57 @@ class TemplateEntityRow extends LitElement {
         ? this.config.icon || "no:icon"
         : undefined;
     const image = this.config.image;
+    let color = this.config.color;
+
     const name =
-      this.config.name !== undefined
-        ? this.config.name
-        : base?.attributes?.friendly_name || base?.entity_id;
+      this.config.name ??
+      entity?.attributes?.friendly_name ??
+      entity?.entity_id;
     const secondary = this.config.secondary;
-    const state =
-      this.config.state !== undefined ? this.config.state : entity?.state;
-    const active = this.config.active;
-    if (active !== undefined) {
+    const state = this.config.state ?? entity?.state;
+
+    const active = this.config.active ?? false;
+    if (active) {
       entity.attributes.brightness = 255;
+      entity.state = "on";
+    }
+    if (this.config.active === false) {
+      entity.state = "off";
+      color = color ?? "var(--paper-item-icon-color, #44739e)";
     }
 
-    const thisStyles = window.getComputedStyle(this);
-    const color =
-      this.config.color !== undefined || active !== undefined
-        ? this.config.color ??
-          (active !== undefined && active
-            ? thisStyles.getPropertyValue("--paper-item-icon-active-color")
-            : thisStyles.getPropertyValue("--paper-item-icon-color"))
-        : undefined;
+    const hidden =
+      this.config.condition !== undefined &&
+      String(this.config.condition).toLowerCase() !== "true";
+    const show_toggle = this.config.toggle && this.config.entity;
+    const has_action =
+      this.config.entity ||
+      this.config.tap_action ||
+      this.config.hold_action ||
+      this.config.double_tap_action;
+
     return html`
-      <div
-        id="wrapper"
-        class="${this.config.condition !== undefined &&
-        String(this.config.condition).toLowerCase() !== "true"
-          ? "hidden"
-          : ""}"
-      >
+      <div id="wrapper" class="${hidden ? "hidden" : ""}">
         <state-badge
           .hass=${this.hass}
           .stateObj=${entity}
           @action=${this._actionHandler}
-          style="${color
-            ? `--paper-item-icon-color: ${color}; --paper-item-icon-active-color: ${color};`
-            : ``}"
           .overrideIcon=${icon}
           .overrideImage=${image}
-          class="pointer"
+          .color=${color}
+          class=${classMap({ pointer: has_action })}
         ></state-badge>
-        <div class="info pointer" @action="${this._actionHandler}">
+        <div
+          class=${classMap({ info: true, pointer: has_action })}
+          @action="${this._actionHandler}"
+        >
           ${name}
           <div class="secondary">${secondary}</div>
         </div>
         <div class="state">
-          ${this.config.toggle && base
-            ? html`<ha-entity-toggle
-                .hass=${this.hass}
-                .stateObj=${entity}
-              ></ha-entity-toggle>`
+          ${show_toggle
+            ? html`<ha-entity-toggle .hass=${this.hass} .stateObj=${entity}>
+              </ha-entity-toggle>`
             : state}
         </div>
       </div>
@@ -158,7 +172,7 @@ class TemplateEntityRow extends LitElement {
 
   static get styles() {
     return [
-      customElements.get("hui-generic-entity-row").styles,
+      (customElements.get("hui-generic-entity-row") as any)?.styles,
       css`
         :host {
           display: inline;
