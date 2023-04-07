@@ -149,7 +149,6 @@ class TemplateEntityRow extends LitElement {
       this.config.condition !== undefined &&
       String(this.config.condition).toLowerCase() !== "true";
     const show_toggle = this.config.toggle && this.config.entity;
-
     const has_action =
       this.config.entity ||
       this.config.tap_action ||
@@ -174,10 +173,7 @@ class TemplateEntityRow extends LitElement {
         ? `${priorityActiveRule}: ${color}; ${secondaryActiveRule}: ${color};`
         : `${secondaryActiveRule}: ${color};`;
     return html`
-      <div
-        id="wrapper"
-        class="${hidden ? "hidden" : ""}"
-      >
+      <div id="wrapper" class="${hidden ? "hidden" : ""}">
         <state-badge
           .hass=${this.hass}
           .stateObj=${entity}
