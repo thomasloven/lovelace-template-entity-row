@@ -101,10 +101,13 @@ class TemplateEntityRow extends LitElement {
       state: "off",
     };
 
-    const domain = entity.entity_id.split(".")[0];
+    const domain =
+      entity?.entity_id !== undefined && entity?.entity_id
+        ? entity?.entity_id.split(".")[0]
+        : 'light';
 
     const domain_device_class =
-      entity.attributes.device_class !== undefined && entity.attributes.device_class
+      entity?.attributes?.device_class !== undefined && entity?.attributes?.device_class
         ? `${domain}-${entity.attributes.device_class}`
         : domain;
 
