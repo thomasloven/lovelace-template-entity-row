@@ -101,19 +101,37 @@ class TemplateEntityRow extends LitElement {
       state: "off",
     };
 
+    const domain = entity.entity_id.split(".")[0];
+
+    const domain_device_class =
+      entity.attributes.device_class !== undefined && entity.attributes.device_class
+        ? `${domain}-${entity.attributes.device_class}`
+        : domain;
+
+    const state_identifier =
+      domain != "sensor"
+        ? `${domain_device_class}-`
+        : '';
+
     const icon =
       this.config.icon !== undefined
         ? this.config.icon || "no:icon"
         : undefined;
     const image = this.config.image;
-    let color = this.config.color;
-
     const name =
       this.config.name ??
       entity?.attributes?.friendly_name ??
       entity?.entity_id;
     const secondary = this.config.secondary;
     const state = this.config.state ?? entity?.state;
+
+    const css_state =
+      entity?.state !== undefined ? entity?.state : state;
+
+    const css_active_state =
+      (css_state == true || String(css_state).toLowerCase() == 'on')
+        ? 'on'
+        : 'active';
 
     const active = this.config.active ?? false;
     if (active) {
@@ -122,28 +140,50 @@ class TemplateEntityRow extends LitElement {
     }
     if (this.config.active === false) {
       entity.state = "off";
-      color = color ?? "var(--paper-item-icon-color, #44739e)";
     }
 
     const hidden =
       this.config.condition !== undefined &&
       String(this.config.condition).toLowerCase() !== "true";
     const show_toggle = this.config.toggle && this.config.entity;
+
     const has_action =
       this.config.entity ||
       this.config.tap_action ||
       this.config.hold_action ||
       this.config.double_tap_action;
 
+    const thisStyles = window.getComputedStyle(this);
+    const priorityActiveRule = `--state-${state_identifier}${css_active_state}-color`;
+    const secondaryActiveRule = '--state-active-color';
+    const priorityActiveColor = thisStyles.getPropertyValue(priorityActiveRule);
+    const color =
+      this.config.color !== undefined || active !== undefined
+        ? this.config.color ??
+          (active !== undefined && active
+            ? (priorityActiveColor !== undefined
+              ? priorityActiveColor
+              : thisStyles.getPropertyValue(secondaryActiveRule))
+            : thisStyles.getPropertyValue("--state-icon-color"))
+        : undefined;
+    const styleColorString =
+      priorityActiveColor !== undefined && priorityActiveRule != secondaryActiveRule
+        ? `${priorityActiveRule}: ${color}; ${secondaryActiveRule}: ${color};`
+        : `${secondaryActiveRule}: ${color};`;
     return html`
-      <div id="wrapper" class="${hidden ? "hidden" : ""}">
+      <div
+        id="wrapper"
+        class="${hidden ? "hidden" : ""}"
+      >
         <state-badge
           .hass=${this.hass}
           .stateObj=${entity}
           @action=${this._actionHandler}
+          style="${color
+            ? `--paper-item-icon-color: ${color}; --state-icon-color: ${color}; ${styleColorString}`
+            : ``}"
           .overrideIcon=${icon}
           .overrideImage=${image}
-          .color=${color}
           class=${classMap({ pointer: has_action })}
         ></state-badge>
         <div
