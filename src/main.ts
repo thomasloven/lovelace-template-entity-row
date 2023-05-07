@@ -166,7 +166,9 @@ class TemplateEntityRow extends LitElement {
             ? (priorityActiveColor !== undefined
               ? priorityActiveColor
               : thisStyles.getPropertyValue(secondaryActiveRule))
-            : thisStyles.getPropertyValue("--state-icon-color"))
+            : (base !== undefined
+              ? undefined
+              : thisStyles.getPropertyValue("--state-icon-color")))
         : undefined;
     const styleColorString =
       priorityActiveColor !== undefined && priorityActiveRule != secondaryActiveRule
@@ -181,6 +183,7 @@ class TemplateEntityRow extends LitElement {
           style="${color
             ? `--paper-item-icon-color: ${color}; --state-icon-color: ${color}; ${styleColorString}`
             : ``}"
+          .stateColor=${color ? false : true}
           .overrideIcon=${icon}
           .overrideImage=${image}
           class=${classMap({ pointer: has_action })}
