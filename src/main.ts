@@ -117,6 +117,7 @@ class TemplateEntityRow extends LitElement {
       entity?.entity_id;
     const secondary = this.config.secondary;
     const state = this.config.state ?? entity?.state;
+    let stateColor = true;
 
     const active = this.config.active ?? false;
     if (active) {
@@ -125,7 +126,7 @@ class TemplateEntityRow extends LitElement {
     }
     if (this.config.active === false) {
       entity.state = "off";
-      color = color ?? "var(--paper-item-icon-color, #44739e)";
+      stateColor = false;
     }
 
     const hidden =
@@ -148,7 +149,7 @@ class TemplateEntityRow extends LitElement {
           .overrideImage=${image}
           .color=${color}
           class=${classMap({ pointer: has_action })}
-          stateColor
+          ?stateColor=${stateColor}
         ></state-badge>
         <div
           class=${classMap({ info: true, pointer: has_action })}
