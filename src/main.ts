@@ -116,7 +116,7 @@ class TemplateEntityRow extends LitElement {
       entity?.attributes?.friendly_name ??
       entity?.entity_id;
     const secondary = this.config.secondary;
-    const state = this.config.state ?? entity?.state;
+    const state = this.config.state ?? base?.state;
     let stateColor = true;
 
     const active = this.config.active ?? false;
