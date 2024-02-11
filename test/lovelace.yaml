@@ -215,10 +215,6 @@ views:
               }
             double_tap_action:
               action: toggle
-            hold_action:
-              action: url
-              url_path: >
-                {{state_attr(config.entity,'latest_release_url')}}
           - type: custom:template-entity-row
             name: No entity
             tap_action:
@@ -233,3 +229,5 @@ views:
             type: custom:template-entity-row
           - entity: light.kitchen_lights
             type: custom:template-entity-row
+          - type: custom:template-entity-row
+            name: '{{ "_(ui.card.climate.current_temperature, name, hello)" }}'

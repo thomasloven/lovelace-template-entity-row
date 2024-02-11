@@ -44,7 +44,7 @@ entities:
 - `active` if this evaluates to "true" or "false", the icon gets will always look active or inactive respectively.
 - `entity` if this evaluates to an entity id, `icon`, `name`, `state` and `image` will be taken from that entity unless manually overridden. Specifying an `entity` will also let you use [`action`](https://www.home-assistant.io/lovelace/entities/#options-for-entities).
 - `condition` if this is set but does not evaluate to "true", the row is not displayed.
-- `toggle` if this evaluates to "true" a toggle is shown instead of the state. The toggle is connected to the `entity`.
+- `toggle` if this evaluates to "true" a toggle is shown instead of the state. The toggle is connected to the `entity`. This will only show a toggle, nothing else. No sliders, no dropdowns, no media controls. `toggle` means Toggle.
 - `tap_action`, `hold_action`, `double_tap_action`: see below.
 - `color` the CSS color of the icon.
 
@@ -97,6 +97,16 @@ double_tap_action:
 ### Why does this look weird?
 
 Because you're not using it correctly. This is **not** a card. It's an entity row, and is meant to be used _inside_ the [entities card](https://www.home-assistant.io/lovelace/entities/)
+
+### Why doesn't toggle: true make buttons appear to control my blinds?
+
+Because "toggle" means a toggle. It's the simplest possible way to control an entity, and anything beyond that is not in the scope of this row and will not be added.
+
+### Why is my log flooded with template errors?
+
+This may happen if you use the GUI editor to edit a template based value. Since Home Assistant redraws the row every time you make any change to the configuration in the GUI editor, it will try to render the template every time you push a key.
+Since the template will be invalid for most of the time while you're editing it, you will get a lot of errors. \
+There's unfortunately nothing I can easily do about this behavior.
 
 ---
 

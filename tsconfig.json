@@ -1,12 +1,9 @@
 {
-    "compilerOptions": {
-      "target": "es2017",
-      "moduleResolution": "node",
-      "resolveJsonModule": true,
-      "allowSyntheticDefaultImports": true,
-      "experimentalDecorators": true,
-      "paths": {
-        "tslib": ["./node_modules/tslib/tslib.d.ts"]
-      }
-    }
+  "compilerOptions": {
+    "target": "es2017",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true
   }
+}

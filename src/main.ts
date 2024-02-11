@@ -1,11 +1,10 @@
 import { LitElement, html, css } from "lit";
 import { property } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
-import { hasTemplate } from "card-tools/src/templates";
-import { bindActionHandler } from "card-tools/src/action";
+import { bindActionHandler } from "./helpers/action";
 import pjson from "../package.json";
-import { bind_template } from "./templates";
-import { hass } from "card-tools/src/hass";
+import { bind_template, hasTemplate } from "./helpers/templates";
+import { hass } from "./helpers/hass";
 
 const OPTIONS = [
   "icon",
@@ -30,13 +29,12 @@ const OPTIONS = [
 const LOCALIZE_PATTERN = /_\([^)]*\)/g;
 
 const translate = (hass, text: String) => {
-  return text.replace(
-    LOCALIZE_PATTERN,
-    (key) => {
-        const params = key.substring(2, key.length - 1).split(new RegExp(/\s*,\s*/));
-        return hass.localize.apply(null, params) || key;
-    }
-  );
+  return text.replace(LOCALIZE_PATTERN, (key) => {
+    const params = key
+      .substring(2, key.length - 1)
+      .split(new RegExp(/\s*,\s*/));
+    return hass.localize.apply(null, params) || key;
+  });
 };
 
 class TemplateEntityRow extends LitElement {
@@ -53,9 +51,9 @@ class TemplateEntityRow extends LitElement {
       if (!this._config[k]) continue;
       if (hasTemplate(this._config[k])) {
         bind_template(
-          (res) => {
+          async (res) => {
             const state = { ...this.config };
-            if (typeof res === "string") res = translate(hass(), res);
+            if (typeof res === "string") res = translate(await hass(), res);
             state[k] = res;
             this.config = state;
           },
@@ -63,7 +61,9 @@ class TemplateEntityRow extends LitElement {
           { config }
         );
       } else if (typeof this._config[k] === "string") {
-        this.config[k] = translate(hass(), this._config[k]);
+        (async () => {
+          this.config[k] = translate(await hass(), this._config[k]);
+        })();
       }
     }
   }
@@ -99,7 +99,7 @@ class TemplateEntityRow extends LitElement {
   render() {
     const base = this.hass.states[this.config.entity];
     const entity = (base && JSON.parse(JSON.stringify(base))) || {
-      entity_id: "light.",
+      entity_id: "binary_sensor.",
       attributes: { icon: "no:icon", friendly_name: "" },
       state: "off",
     };
