@@ -32,7 +32,10 @@ const LOCALIZE_PATTERN = /_\([^)]*\)/g;
 const translate = (hass, text: String) => {
   return text.replace(
     LOCALIZE_PATTERN,
-    (key) => hass.localize(key.substring(2, key.length - 1)) || key
+    (key) => {
+        const params = key.substring(2, key.length - 1).split(new RegExp(/\s*,\s*/));
+        return hass.localize.apply(null, params) || key;
+    }
   );
 };
 

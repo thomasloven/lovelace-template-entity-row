@@ -66,6 +66,8 @@ To find the available keys, open your browsers console, type in the following an
 document.querySelector("home-assistant").hass.resources;
 ```
 
+Context variables are supported as well, for instance: `_(ui.duration.second, count, 30)` (note there are no quotes around `count`).
+
 ### Actions
 
 `tap_action`, `hold_action` and `double_tap_action` can be templated if the template evaluates to a valid [action configuration](https://www.home-assistant.io/lovelace/actions/) in python format. Standard YAML without templates works too.
