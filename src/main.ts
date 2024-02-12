@@ -47,25 +47,29 @@ class TemplateEntityRow extends LitElement {
     this._config = { ...config };
     this.config = { ...this._config };
 
+    this.bind_templates();
+  }
+
+  async bind_templates() {
+    const hs = await hass();
     for (const k of OPTIONS) {
       if (!this._config[k]) continue;
       if (hasTemplate(this._config[k])) {
         bind_template(
-          async (res) => {
+          (res) => {
             const state = { ...this.config };
-            if (typeof res === "string") res = translate(await hass(), res);
+            if (typeof res === "string") res = translate(hs, res);
             state[k] = res;
             this.config = state;
           },
           this._config[k],
-          { config }
+          { config: this._config }
         );
       } else if (typeof this._config[k] === "string") {
-        (async () => {
-          this.config[k] = translate(await hass(), this._config[k]);
-        })();
+        this.config[k] = translate(hs, this._config[k]);
       }
     }
+    this.requestUpdate();
   }
 
   async firstUpdated() {

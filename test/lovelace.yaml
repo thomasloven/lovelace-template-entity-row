@@ -231,3 +231,53 @@ views:
             type: custom:template-entity-row
           - type: custom:template-entity-row
             name: '{{ "_(ui.card.climate.current_temperature, name, hello)" }}'
+  - title: Load test
+    cards:
+      - type: entities
+        entities:
+          - entity: input_boolean.test
+      - <<: &card
+          type: entities
+          entities:
+            - <<: &row
+                type: custom:template-entity-row
+                icon: mdi:cog
+                active: "{{is_state('input_boolean.test','on')}}"
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+            - *row
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
+      - *card
