@@ -217,9 +217,10 @@ views:
               action: toggle
           - type: custom:template-entity-row
             name: No entity
-            tap_action:
-              action: url
-              url_path: https://www.google.com
+            entity: light.bed_light
+            tap_action: { "action": "toggle" }
+            # action: url
+            # url_path: https://www.google.com
 
       - type: entities
         entities:
